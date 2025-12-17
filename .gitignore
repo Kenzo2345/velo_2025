@@ -1,5 +1,14 @@
-__pycache__
-results/
-velo_env.sif
-.devcontainer/devcontainer.json
+# Environnement virtuel
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Outputs - Phase 1
+1_basic_single_sim/results.csv
+1_basic_single_sim/results.png
+1_basic_single_sim/results_metrics.tsv
+
+# Outputs - Phase 2
 2_serial_param_sweep/results/
