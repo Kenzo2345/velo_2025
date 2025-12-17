@@ -2,3 +2,4 @@ __pycache__
 results/
 velo_env.sif
 .devcontainer/devcontainer.json
+2_serial_param_sweep/results/
