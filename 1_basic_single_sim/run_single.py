@@ -7,47 +7,53 @@ from model import State, run_simulation
 
 
 def parse_args():
-    """Parse command line arguments for single simulation run.
-    
-    Returns:
-        Parsed arguments containing:
-        - steps: Number of simulation steps
-        - p1: Probability of movement from Mailly to Moulin
-        - p2: Probability of movement from Moulin to Mailly
-        - init_mailly: Initial bikes at Mailly station
-        - init_moulin: Initial bikes at Moulin station
-        - seed: Random seed (default: 0)
-        - out_csv: Output CSV file path
-        - plot: Boolean flag to generate plots
-    
-    Note:
-        Use argparse.ArgumentParser to define all required and optional arguments
-    """
-    # TODO: Implement argument parsing
-    pass
+    parser = argparse.ArgumentParser(description="Run a single bike-sharing simulation.")
+
+    parser.add_argument("--steps", type=int, required=True, help="Number of simulation steps")
+    parser.add_argument("--p1", type=float, required=True, help="Prob Mailly -> Moulin")
+    parser.add_argument("--p2", type=float, required=True, help="Prob Moulin -> Mailly")
+    parser.add_argument("--init-mailly", dest="init_mailly", type=int, required=True, help="Initial bikes at Mailly")
+    parser.add_argument("--init-moulin", dest="init_moulin", type=int, required=True, help="Initial bikes at Moulin")
+    parser.add_argument("--seed", type=int, default=0, help="Random seed (default: 0)")
+    parser.add_argument("--out-csv", dest="out_csv", type=str, required=True, help="Output CSV file path")
+    parser.add_argument("--plot", action="store_true", help="Generate plots")
+
+    return parser.parse_args()
 
 
 def main():
-    """Main function to run a single bike-sharing simulation.
-    
-    This function should:
-    1. Parse command line arguments
-    2. Run the simulation with specified parameters
-    3. Save results to CSV files (timeseries and metrics)
-    4. Optionally generate and save plots
-    
-    Output files:
-    - Timeseries data: CSV with time, mailly, moulin columns
-    - Metrics data: CSV with key-value pairs of simulation metrics
-    - Optional plot: PNG showing bike counts over time for both stations
-    
-    Note:
-        Create output directories if they don't exist
-        Save metrics as tab-separated key-value pairs
-    """
-    # TODO: Implement main simulation workflow
-    pass
+    args = parse_args()
 
+    out_csv = Path(args.out_csv)
+    out_dir = out_csv.parent
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    df, metrics = run_simulation(
+        initial_mailly=args.init_mailly,
+        initial_moulin=args.init_moulin,
+        steps=args.steps,
+        p1=args.p1,
+        p2=args.p2,
+        seed=args.seed,
+    )
+
+    df.to_csv(out_csv, index=False)
+
+    metrics_path = out_dir / f"{out_csv.stem}_metrics.tsv"
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        for k, v in metrics.items():
+            f.write(f"{k}\t{v}\n")
+
+    if args.plot:
+        plt.figure()
+        plt.plot(df["time"], df["mailly"], label="Mailly")
+        plt.plot(df["time"], df["moulin"], label="Moulin")
+        plt.xlabel("time")
+        plt.ylabel("bikes")
+        plt.legend()
+        plot_path = out_dir / f"{out_csv.stem}.png"
+        plt.savefig(plot_path, dpi=150, bbox_inches="tight")
+        plt.close()
 
 if __name__ == "__main__":
     main()
