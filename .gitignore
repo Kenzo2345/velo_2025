@@ -1,4 +1,15 @@
-__pycache__
-results/
-velo_env.sif
-.devcontainer/devcontainer.json
+#resultat
+**/results/
+**/thread/
+**/multiprocessing/
+**/mpi/
+*.png
+*.csv
+*.tsv
+
+
+
+# python
+__pycache__/
+*.pyc
+.venv/
